@@ -22,6 +22,10 @@ def news():
         new_list = json.loads(f.read())
     return render_template('news.html', title="Новости", news=new_list)
 
+@app.route('/vartest')
+def vartest():
+    return render_template('var_test.html', title='Переменные в HTML')
+
 
 
 # @app.route('/')
