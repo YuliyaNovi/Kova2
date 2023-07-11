@@ -9,7 +9,7 @@ app = Flask(__name__)
 def index():
     param = {}
     param['username'] = 'Слушатель'
-    param['title'] = 'Работа с шаблонами'
+    param['title'] = 'Расширяем шаблоны'
     return render_template('index.html', **param)
 
 @app.route('/odd_even')
