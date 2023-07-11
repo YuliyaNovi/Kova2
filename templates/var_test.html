@@ -6,12 +6,15 @@
 </head>
 <body>
 <h1>Кто в очереди за кем?</h1>
-<!--назначение переменнной прямо в html-->
+<!--объявление переменнной прямо в html-->
 {% set lst = ['Tom', 'Bob', 'Tim', 'Sam'] %}
 <ul>
   {% for user in lst %}
     <li>
         {{ loop.index }} - {{ user }}
+        {% if loop.first %} - первый
+        {% elif loop.last %} - последний
+        {% endif %}
     </li>
   {% endfor %}
 </ul>
