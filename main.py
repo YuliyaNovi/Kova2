@@ -5,7 +5,7 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/index')
 def index():
-    return redirect('/form_sample')
+    return redirect('/form_sample')  # безусловный redirect()
 
 # @app.route('/')
 # @app.route('/index')
@@ -284,7 +284,7 @@ def load_photo():
         </form>
         """
     elif request.method == 'POST':
-        f = request.files['file']
+        f = request.files['file']  # request.form.get('file')
         f.save('./static/images/loaded.png')
         return '<h1>Файл у вас на сервере</h1>'
 
