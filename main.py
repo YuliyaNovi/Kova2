@@ -1,11 +1,28 @@
 from flask import Flask, url_for, request, redirect
+from flask import render_template
+import json
 
 app = Flask(__name__)
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return redirect('/form_sample')  # безусловный redirect()
+    param = {}
+    param['username'] = 'Слушатель'
+    param['title'] = 'Работа с шаблонами'
+    return render_template('index.html', **param)
+
+@app.route('/odd_even')
+def odd_even():
+    return render_template('odd_even.html', number=3)
+
+@app.route('/news')
+def news():
+    with open ("news.json", "rt", encoding="utf8") as f:
+        new_list = json.loads(f.read())
+    return render_template('news.html', title="Новости", news=new_list)
+
+
 
 # @app.route('/')
 # @app.route('/index')
