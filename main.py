@@ -1,11 +1,16 @@
-from flask import Flask, url_for, request
+from flask import Flask, url_for, request, redirect
 
 app = Flask(__name__)
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return 'Адмирал!<br><a href="/slogan">Слоган</a>'
+    return redirect('/form_sample')
+
+# @app.route('/')
+# @app.route('/index')
+# def index():
+#     return 'Адмирал!<br><a href="/slogan">Слоган</a>'
 
 @app.route('/poster')
 def poster():
@@ -226,17 +231,33 @@ def form_sample():
             </div>
             <!--Radio Button - Gender Selection -->
             <div class="form-group">
-            <label for=form-check">Укажите пол</label> 
-            <div class="form-check">
-            <input class="form-check-input" type="radio" name="sex" id="male" value="male" checked>
-            <input class="form-check-label" for="male">Мужской</label>
+                <label for=form-check">Укажите пол</label> 
+                <div class="form-check">
+                <input class="form-check-input" type="radio" name="sex" id="male" value="male" checked>
+                <label class="form-check-label" for="male">Мужской</label>
             </div>
             <div class="form-check">
             <input class="form-check-input" type="radio" name="sex" id="female" value="female">
             <input class="form-check-label" for="female">Женский</label>
             </div>
         </div>
-        <!-- End of Gender Selection -->    
+        <!-- End of Gender Selection -->
+        <!-- Text Area -->
+        <div>
+            <label for="about">Немного о себе</label>
+            <textarea class="form-control" id="about" name="about" rows="3"></textarea>
+        </div><br>
+        <!-- End of Text Area -->
+        <div class="form-group">
+            <label for="photo">Прикрепите фото</label> 
+            <input type="file" class="form-control-file" id="photo" name="file">
+        </div>
+        <!-- Check Box -->
+        <div class="form-group form-check"> 
+            <input type="checkbox" class="form-check-input" id="ready" name="ready">
+            <label class="form-check-label" for="ready">Готовы?</label>
+        </div><br>    
+        <!--End Check Box -->  
             <button type="submit" class="btn btn-primary">Отправить</button>
             </form>
             </div>
@@ -249,6 +270,23 @@ def form_sample():
         return 'Форма отправлена'
 
 
+@app.route('/load_photo', methods=['GET', 'POST'])
+def load_photo():
+    if request.method == 'GET':
+        return f"""
+        <form class="login_form" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="photo">Приложите фото:</label>
+                <input type="file" class="from-control-file" id="photo" name="file">
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+    
+        </form>
+        """
+    elif request.method == 'POST':
+        f = request.files['file']
+        f.save('./static/images/loaded.png')
+        return '<h1>Файл у вас на сервере</h1>'
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
