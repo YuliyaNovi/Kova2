@@ -224,71 +224,82 @@ def slideshow():
     </html>"""
 
 
+# @app.route('/form_sample', methods=['GET', 'POST'])
+# def form_sample():
+#     if request.method == 'GET':
+#         return f"""<!DOCTYPE html>
+#             <html lang="en">
+#             <head>
+#                 <meta charset="UTF-8">
+#                 <title>Пример формы</title>
+#                 <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}">
+#                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+#             </head>
+#             <body>
+#             <h1>Форма для регистрации</h1>
+#             <div class="container">
+#             <form class="login_form" method="post">
+#             <input type="text" class="form-control" name="fname" placeholder="Фамилия"><br>
+#             <input type="text" class="form-control" name="sname" placeholder="Имя"><br>
+#             <input type="text" class="form-control" name="email" placeholder="E-mail"><br>
+#             <input type="text" class="form-control" name="password" placeholder="Password"><br>
+#             <div class="form-group">
+#             <label for="classSelect">Ваше образование</label>
+#             <select class="form-control" id="classSelect" name="profession">
+#             <option>Высшее</option>
+#             <option>Среднее</option>
+#             </select>
+#             </div>
+#             <!--Radio Button - Gender Selection -->
+#             <div class="form-group">
+#                 <label for=form-check">Укажите пол</label>
+#                 <div class="form-check">
+#                 <input class="form-check-input" type="radio" name="sex" id="male" value="male" checked>
+#                 <label class="form-check-label" for="male">Мужской</label>
+#             </div>
+#             <div class="form-check">
+#             <input class="form-check-input" type="radio" name="sex" id="female" value="female">
+#             <input class="form-check-label" for="female">Женский</label>
+#             </div>
+#         </div>
+#         <!-- End of Gender Selection -->
+#         <!-- Text Area -->
+#         <div>
+#             <label for="about">Немного о себе</label>
+#             <textarea class="form-control" id="about" name="about" rows="3"></textarea>
+#         </div><br>
+#         <!-- End of Text Area -->
+#         <div class="form-group">
+#             <label for="photo">Прикрепите фото</label>
+#             <input type="file" class="form-control-file" id="photo" name="file">
+#         </div>
+#         <!-- Check Box -->
+#         <div class="form-group form-check">
+#             <input type="checkbox" class="form-check-input" id="ready" name="ready">
+#             <label class="form-check-label" for="ready">Готовы?</label>
+#         </div><br>
+#         <!--End Check Box -->
+#             <button type="submit" class="btn btn-primary">Отправить</button>
+#             </form>
+#             </div>
+#             </body>
+#             </html>"""
+#     elif request.method == 'POST':
+#         print(request.method)
+#         print(request.form['fname'])
+#         print(request.form['sname'])
+#         return 'Форма отправлена'
+
+
 @app.route('/form_sample', methods=['GET', 'POST'])
 def form_sample():
     if request.method == 'GET':
-        return f"""<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>Пример формы</title>
-                <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}">
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-            </head>
-            <body>
-            <h1>Форма для регистрации</h1>
-            <div class="container">
-            <form class="login_form" method="post">
-            <input type="text" class="form-control" name="fname" placeholder="Фамилия"><br>
-            <input type="text" class="form-control" name="sname" placeholder="Имя"><br>
-            <input type="text" class="form-control" name="email" placeholder="E-mail"><br>
-            <input type="text" class="form-control" name="password" placeholder="Password"><br>
-            <div class="form-group">
-            <label for="classSelect">Ваше образование</label>
-            <select class="form-control" id="classSelect" name="profession">
-            <option>Высшее</option>
-            <option>Среднее</option>
-            </select>
-            </div>
-            <!--Radio Button - Gender Selection -->
-            <div class="form-group">
-                <label for=form-check">Укажите пол</label> 
-                <div class="form-check">
-                <input class="form-check-input" type="radio" name="sex" id="male" value="male" checked>
-                <label class="form-check-label" for="male">Мужской</label>
-            </div>
-            <div class="form-check">
-            <input class="form-check-input" type="radio" name="sex" id="female" value="female">
-            <input class="form-check-label" for="female">Женский</label>
-            </div>
-        </div>
-        <!-- End of Gender Selection -->
-        <!-- Text Area -->
-        <div>
-            <label for="about">Немного о себе</label>
-            <textarea class="form-control" id="about" name="about" rows="3"></textarea>
-        </div><br>
-        <!-- End of Text Area -->
-        <div class="form-group">
-            <label for="photo">Прикрепите фото</label> 
-            <input type="file" class="form-control-file" id="photo" name="file">
-        </div>
-        <!-- Check Box -->
-        <div class="form-group form-check"> 
-            <input type="checkbox" class="form-check-input" id="ready" name="ready">
-            <label class="form-check-label" for="ready">Готовы?</label>
-        </div><br>    
-        <!--End Check Box -->  
-            <button type="submit" class="btn btn-primary">Отправить</button>
-            </form>
-            </div>
-            </body>
-            </html>"""
+        return render_template('user_form.html', title='Форма')
     elif request.method == 'POST':
-        print(request.method)
-        print(request.form['fname'])
-        print(request.form['sname'])
-        return 'Форма отправлена'
+        myform = request.form.to_dict()
+        return render_template('filled_form.html',
+                               title='Ваши данные',
+                               data=myform)
 
 
 @app.route('/load_photo', methods=['GET', 'POST'])
