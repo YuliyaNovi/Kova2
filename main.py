@@ -1,8 +1,10 @@
 from flask import Flask, url_for, request, redirect
 from flask import render_template
 import json
+import requests
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'too short key'
 
 @app.route('/')
 @app.route('/index')
@@ -296,6 +298,8 @@ def form_sample():
     if request.method == 'GET':
         return render_template('user_form.html', title='Форма')
     elif request.method == 'POST':
+        f = request.files['file']
+        f.save('./static/images/loaded.png')
         myform = request.form.to_dict()
         return render_template('filled_form.html',
                                title='Ваши данные',
@@ -319,6 +323,38 @@ def load_photo():
         f = request.files['file']  # request.form.get('file')
         f.save('./static/images/loaded.png')
         return '<h1>Файл у вас на сервере</h1>'
+
+@app.route('/weather_form', methods=['GET', 'POST'])
+def weather_form():
+    if request.method == 'GET':
+        return render_template('weather_form.html',
+                               title='Погода')
+    elif request.method == 'POST':
+        town = request.form.get('town')
+        data = {}
+        key = 'd2e12e0537ae1587c34635e76e29f336'
+        url = 'http://api.openweathermap.org/data/2.5/weather'
+        params = {'APPID': key, 'q': town, 'units': 'metric'}
+        result = requests.get(url, params=params)
+        weather = result.json()
+        code = weather['cod']
+        icon = weather['weather'][0]['icon']
+        temperature = weather['main']['temp']
+        data['code'] = code
+        data['icon'] = icon
+        data['temp'] = temperature
+        return render_template('weather.html',
+                               title=f'Погода в городе {town}',
+                               town=town, data=data, icon=icon)
+
+@app.errorhandler(404)
+def http_404_error(error):
+    return redirect('/error404')
+
+@app.route('/error404')
+def well():
+    return render_template('well.html')
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
