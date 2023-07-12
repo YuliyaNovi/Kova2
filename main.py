@@ -2,9 +2,12 @@ from flask import Flask, url_for, request, redirect
 from flask import render_template
 import json
 import requests
+from loginform import LoginForm
+from data import db_session
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'too short key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/news.sqlite'
 
 @app.route('/')
 @app.route('/index')
@@ -355,6 +358,18 @@ def http_404_error(error):
 def well():
     return render_template('well.html')
 
+@app.route('/success')
+def success():
+    return 'Success'
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        return redirect('/success')
+    return render_template('login.html', title='Авторизация',
+                           form=form)
 
 if __name__ == '__main__':
+    db_session.global_init('db/news.sqlite')
     app.run(host='127.0.0.1', port=5000, debug=True)
