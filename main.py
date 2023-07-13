@@ -11,13 +11,13 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'too short key'
 app.config['SQLALCHEMY_DATABASE_URL'] = 'sqlite:///db/news.sqlite'
 
-@app.route('/')
-@app.route('/index')
-def index():
-    param = {}
-    param['username'] = 'Слушатель'
-    param['title'] = 'Расширяем шаблоны'
-    return render_template('index.html', **param)
+# @app.route('/')
+# @app.route('/index')
+# def index():
+#     param = {}
+#     param['username'] = 'Слушатель'
+#     param['title'] = 'Расширяем шаблоны'
+#     return render_template('index.html', **param)
 
 @app.route('/odd_even')
 def odd_even():
@@ -372,14 +372,14 @@ def login():
     return render_template('login.html', title='Авторизация',
                            form=form)
 
-if __name__ == '__main__':
-    db_session.global_init('db/news.sqlite')
-    # app.run(host='127.0.0.1', port=5000, debug=True)
+# if __name__ == '__main__':
+#     db_session.global_init('db/news.sqlite')
+#     # app.run(host='127.0.0.1', port=5000, debug=True)
     # В сложных запросах:
     # '|' - означает или
     # '&' - означает и
     # Работу с БД начинают с открытия сессии
-    db_sess = db_session.create_session()
+    # db_sess = db_session.create_session()
     # С помощью объекта сессии происходит обращение к таблице
     # users = db_sess.query(User).first()
     # users = db_sess.query(User).all()  # выполняем запрос к классу
@@ -416,7 +416,20 @@ if __name__ == '__main__':
     # news = News(title='Новости от Владимира №4', content="Пошел на обед", is_private=False)
     # id.news.append(news)  # добавили новость с помощью append
     # db_sess.commit()
+    #
+    # user = db_sess.query(User).filter(User.id == 1).first()
+    # for news in user.news:
+    #     print(news)
 
-    user = db_sess.query(User).filter(User.id == 1).first()
-    for news in user.news:
-        print(news)
+
+@app.route('/')
+@app.route('/index')
+def index():
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.is_private != True)
+    return render_template('index.html', title='Новости', news=news)
+
+
+if __name__ == '__main__':
+    db_session.global_init('db/news.sqlite')
+    app.run(host='127.0.0.1', port=5000, debug=True)
