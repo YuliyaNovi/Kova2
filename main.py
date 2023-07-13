@@ -4,10 +4,11 @@ import json
 import requests
 from loginform import LoginForm
 from data import db_session
+from data.users import User
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'too short key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/news.sqlite'
+app.config['SQLALCHEMY_DATABASE_URL'] = 'sqlite:///db/news.sqlite'
 
 @app.route('/')
 @app.route('/index')
@@ -372,4 +373,11 @@ def login():
 
 if __name__ == '__main__':
     db_session.global_init('db/news.sqlite')
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    # app.run(host='127.0.0.1', port=5000, debug=True)
+    user = User()
+    user.name = 'Mark'
+    user.about = 'Plumber'
+    user.email = 'Mark@mail.ru'
+    db_sess = db_session.create_session()
+    db_sess.add(user)
+    db_sess.commit()
