@@ -13,4 +13,7 @@ class User(SqlAlchemyBase):
     email = sqlalchemy.Column(sqlalchemy.String, index=True, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     create_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
-    news = orm.relationship("News", back_populates='user') # ссылаемся на атрибут класса
+    news = orm.relationship("News", back_populates='user')  # ссылаемся на атрибут класса
+
+    def __repr__(self):
+        return f'{self.name} - {self.email}'  # метод,представляющий объект внутри класса, как мы хотим

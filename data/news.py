@@ -13,3 +13,6 @@ class News(SqlAlchemyBase):
     is_private = sqlalchemy.Column(sqlalchemy.Boolean, default=True)  # приватная новость
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
     user = orm.relationship('User')
+
+    def __repr__(self):
+        return f'{self.content}'

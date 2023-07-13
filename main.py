@@ -5,6 +5,7 @@ import requests
 from loginform import LoginForm
 from data import db_session
 from data.users import User
+from data.news import News
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'too short key'
@@ -374,10 +375,48 @@ def login():
 if __name__ == '__main__':
     db_session.global_init('db/news.sqlite')
     # app.run(host='127.0.0.1', port=5000, debug=True)
-    user = User()
-    user.name = 'Mark'
-    user.about = 'Plumber'
-    user.email = 'Mark@mail.ru'
+    # В сложных запросах:
+    # '|' - означает или
+    # '&' - означает и
+    # Работу с БД начинают с открытия сессии
     db_sess = db_session.create_session()
-    db_sess.add(user)
-    db_sess.commit()
+    # С помощью объекта сессии происходит обращение к таблице
+    # users = db_sess.query(User).first()
+    # users = db_sess.query(User).all()  # выполняем запрос к классу
+    # users = db_sess.query(User).filter(User.id > 1)
+    # users = db_sess.query(User).filter(User.name.notilike('%d%'))  # выводит тех, в которых нет d (не учитывает регистр)
+    # users = db_sess.query(User).filter(User.name.notlike('%d%'))
+    # for user in users:
+    #     print(user)
+    # user = db_sess.query(User).filter(User.id == 1).first()  # Voldemar will be changed to Vladimir
+    # user.name = 'Vladimir'
+    # db_sess.commit()
+
+    # Удаление
+    # user = db_sess.query(User).filter(User.id == 2).first()
+    # db_sess.delete(user)
+    # db_sess.commit()
+    #
+    # news = News(title='Новости от Владимира', content="Опаздываю на работу",
+    #             user_id=1, is_private=False)
+    #
+    # db_sess.add(news)
+    # db_sess.commit()
+    #
+    # id = db_sess.query(User).filter(User.id == 1).first()
+    # news = News(title='Новости от Владимира №2', content="Больше не опаздываю",
+    #             user_id=id.id, is_private=False)
+    #
+    # db_sess.add(news)
+    # db_sess.commit()
+
+
+    # user = db_sess.query(User).filter(User.id == 1).first()
+    # news = News(title='Новости от Владимира №3', content="На месте", is_private=False)
+    # news = News(title='Новости от Владимира №4', content="Пошел на обед", is_private=False)
+    # id.news.append(news)  # добавили новость с помощью append
+    # db_sess.commit()
+
+    user = db_sess.query(User).filter(User.id == 1).first()
+    for news in user.news:
+        print(news)
