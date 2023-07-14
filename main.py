@@ -4,15 +4,26 @@ import json
 import requests
 from loginform import LoginForm
 from data import db_session
+from flask_login import login_manager, LoginManager
 from data.users import User
 from data.news import News
 from forms.user import RegisterForm
-from flask import make_response
+from flask import make_response, session
+import datetime
 
 
 app = Flask(__name__)
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 app.config['SECRET_KEY'] = 'too short key'
 app.config['SQLALCHEMY_DATABASE_URL'] = 'sqlite:///db/news.sqlite'
+app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)  # ГОД
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
 
 # @app.route('/')
 # @app.route('/index')
@@ -468,16 +479,41 @@ def index():
 @app.route('/cookie_test')
 def cookie_test():
     visit_count = int(request.cookies.get('visit_count', 0))
-    if visit_count:
+    if visit_count != 0 and visit_count < 20:
         res = make_response(f'Были уже {visit_count + 1} раз')
         res.set_cookie('visit_count', str(visit_count + 1),
                        max_age=60 * 60 * 24 * 365 * 2)
+
+    elif visit_count > 5:
+        res = make_response(f'Были уже {visit_count + 1} раз')
+        res.set_cookie('visit_count', str(visit_count + 1),
+                       max_age=0)
+
     else:
         res = make_response('Вы впервые здесь за 2 года')
         res.set_cookie('visit_count', '1',
                        max_age=60 * 60 * 24 * 365 * 2)
 
     return res
+
+# @app.route('/session_test')
+# def session_test():
+#     visit_count = session.get('visit_count', 0)
+#     session['visit_count'] = visit_count + 1
+#     print(session['visit_count'])
+#     session.permanent = True  # Максимум 31 день
+#     return make_response(f'Мы тут были уже {visit_count + 1} раз')
+
+
+# Убить сессию
+@app.route('/session_test')
+def session_test():
+    visit_count = session.get('visit_count', 0)
+    session['visit_count'] = visit_count + 1
+    if session['visit_count'] > 3:
+        session.pop('visit_count', None)
+    session.permanent = True  # Максимум 31 день
+    return make_response(f'Мы тут были уже {visit_count + 1} раз')
 
 if __name__ == '__main__':
     db_session.global_init('db/news.sqlite')
