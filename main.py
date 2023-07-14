@@ -7,6 +7,8 @@ from data import db_session
 from data.users import User
 from data.news import News
 from forms.user import RegisterForm
+from flask import make_response
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'too short key'
@@ -451,6 +453,31 @@ def index():
     news = db_sess.query(News).filter(News.is_private != True)
     return render_template('index.html', title='Новости', news=news)
 
+# @app.route('/mail', methods=['GET'])
+# def get_form():
+#     return render_template('mail_send.html')
+#
+# @app.route('/mail', methods=['POST'])
+# def post_form():
+#    email = request.values.get('email')
+#    if send_mail(email, 'Вам письмо', 'Текст письма'):
+#        return f'Письмо на адрес {email} отправлено успешно!'
+#    return 'Сбой при отправке'
+
+
+@app.route('/cookie_test')
+def cookie_test():
+    visit_count = int(request.cookies.get('visit_count', 0))
+    if visit_count:
+        res = make_response(f'Были уже {visit_count + 1} раз')
+        res.set_cookie('visit_count', str(visit_count + 1),
+                       max_age=60 * 60 * 24 * 365 * 2)
+    else:
+        res = make_response('Вы впервые здесь за 2 года')
+        res.set_cookie('visit_count', '1',
+                       max_age=60 * 60 * 24 * 365 * 2)
+
+    return res
 
 if __name__ == '__main__':
     db_session.global_init('db/news.sqlite')
