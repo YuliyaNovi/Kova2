@@ -10,5 +10,5 @@ class LoginForm(FlaskForm):
     email = EmailField('Ваша почта', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     remember_me = BooleanField('Запомнить меня')
-    file = FileField('Файл')
+    # file = FileField('Файл')
     submit = SubmitField('Войти')

@@ -1,10 +1,12 @@
 from flask import Flask, url_for, request, redirect
-from flask import render_template
+from flask import render_template, abort
 import json
 import requests
+
+from forms.add_news import NewsForm
 from loginform import LoginForm
 from data import db_session
-from flask_login import login_manager, LoginManager
+from flask_login import login_manager, LoginManager, login_user, login_required, logout_user, current_user
 from data.users import User
 from data.news import News
 from forms.user import RegisterForm
@@ -37,11 +39,58 @@ def load_user(user_id):
 def odd_even():
     return render_template('odd_even.html', number=3)
 
-@app.route('/news')
-def news():
-    with open ("news.json", "rt", encoding="utf8") as f:
-        new_list = json.loads(f.read())
-    return render_template('news.html', title="Новости", news=new_list)
+@app.route('/news', methods=['GET', 'POST'])
+@login_required
+# def news():
+    # with open ("news.json", "rt", encoding="utf8") as f:
+    #     new_list = json.loads(f.read())
+# return render_template('news.html', title="Новости", news=new_list)
+def add_news():
+    form = NewsForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        news = News()
+        news.title = form.title.data
+        news.content = form.content.data
+        news.is_private = form.is_private.data
+        current_user.news.append(news)
+        db_sess.merge(current_user)  # слияние сесси с текущим пользователем
+        db_sess.commit()
+        return redirect('/')
+    return render_template('news.html', title='Добавление новости', form=form)
+
+@app.route('/news/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_news(id):
+    print(id)
+    form = NewsForm
+    if request.method == 'GET':
+        db_sess = db_session.create_session()
+        news = db_sess.query(News).filter(News.id == id,
+                                          News.user == current_user).first()
+        print(News.id, id)
+        print(current_user, News.user)
+        if news:
+            form.title.data = news.title
+            form.content.data = news.content
+            form.is_private.data = news.is_private
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        news = db_sess.query(News).filter(News.id == id,
+                                          News.user == current_user).first()
+        if news:
+            news.title = form.title.data
+            news.content = form.content.data
+            news.is_private = form.is_private.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+        return render_template('news.html', title='Редактирование новости', form=form)
+
+
 
 @app.route('/vartest')
 def vartest():
@@ -403,9 +452,14 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        return redirect('/success')
-    return render_template('login.html', title='Авторизация',
-                           form=form)
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect('/')
+        return render_template('login.html', title='Повторная авторизация',
+                               message='Неверный логин или пароль', form=form)
+    return render_template('login.html', title='авторизация', form=form)
 
 # if __name__ == '__main__':
 #     db_session.global_init('db/news.sqlite')
@@ -459,9 +513,14 @@ def login():
 
 @app.route('/')
 @app.route('/index')
+# @login_required # не позволяет зайти на главную страницу без авторизации
 def index():
     db_sess = db_session.create_session()
-    news = db_sess.query(News).filter(News.is_private != True)
+    if current_user.is_authenticated:
+        news = db_sess.query(News).filter(
+            (News.user == current_user) | (News.is_private != True))
+    else:
+        news = db_sess.query(News).filter(News.is_private != True)
     return render_template('index.html', title='Новости', news=news)
 
 # @app.route('/mail', methods=['GET'])
@@ -514,6 +573,16 @@ def session_test():
         session.pop('visit_count', None)
     session.permanent = True  # Максимум 31 день
     return make_response(f'Мы тут были уже {visit_count + 1} раз')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
+
+@app.errorhandler(401)
+def http_401_handler(error):
+    return redirect('/login')
 
 if __name__ == '__main__':
     db_session.global_init('db/news.sqlite')
